@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <title>ChatRTC</title>
+</head>
+<body>
+  <div align="center">
+    <div style="max-width: 1000px;" align="center">
+      <h3>Welcome <span id="username"><%=user%></span> to ChatRTC</h3>
+      <div class="row" style="margin-bottom: 1em;">
+        <div class="col-xs-4" align="left">
+          <button class="btn btn-default" id="openChannels" disabled>Open channels: <span id="onlineUsers">0</span>.</button>
+        </div>
+        <div class="col-xs-8" align="right">
+          <button id="outButton" class="btn btn-default" data-auth="logOut">logOut</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-4" align="left">
+          <ul id="usersList"></ul>
+        </div>
+        <div class="col-xs-8">
+          <input class="form-control" type="text" id="message" placeholder="input message">
+          <input class="form-control inputFile" type="file" id="fileInput">
+          <div id="chatLog" class="chat" align="left">
+            <div>Chat log:</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/chat.bundle.js"></script>
+</body>
+</html>

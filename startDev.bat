@@ -1,0 +1,1 @@
+nodemon --exec "yarn lint && webpack && yarn start"

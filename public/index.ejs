@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <title>ChatRTC</title>
+</head>
+<body>
+  <div align="center">
+    <div style="max-width: 600px;">
+      <h1>Welcome to ChatRTC</h1>
+      <p>All users - <span id="allUsers"><%=allUsers%></span>; users loggedIn - <span id="onlineUsers"><%=onlineUsers%></span>.</p>
+      <p>Please, singUp or logIn</p>
+      <ul class="nav nav-tabs" id="navTab">
+        <li class="active"><a href="#authin">logIn</a></li>
+        <li><a href="#authup">signUp</a></li>
+      </ul>
+
+      <div class="fields">
+        <input type="email" class="form-control" id="inpEmail" placeholder="email">
+        <p></p>
+        <input type="password" class="form-control" id="inpPass" placeholder="password">
+      </div>
+
+      <div class="tab-content content">
+        <div class="tab-pane active" id="authin">
+          <button id="inButton" class="btn btn-default" data-auth="logIn">logIn</button>
+        </div>
+        <div class="tab-pane" id="authup">
+          <button id="upButton" class="btn btn-default" data-auth="signUp">signUp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('#navTab a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    });
+  </script>
+  <script src="js/index.bundle.js"></script>
+</body>
+</html>
