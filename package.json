@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "startDev.bat",
     "lint": "eslint server && eslint client",
-    "start": "babel-node server/server.js",
+    "start": "babel-node server/server.js"
   },
   "nodemonConfig": {
     "watch": [

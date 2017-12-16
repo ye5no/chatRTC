@@ -20,9 +20,6 @@ const schema = {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  color: {
-    type: Sequelize.STRING,
-  },
   password: {
     type: Sequelize.VIRTUAL,
     validate: {

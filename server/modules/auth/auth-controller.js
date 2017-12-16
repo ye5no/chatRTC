@@ -4,11 +4,6 @@ import e1 from '../../utils/e1.js';
 import {JWT} from '../../config.js';
 import Users from '../../models/users.js';
 
-function randomColor() {
-  let randColor = '#' + Math.floor(Math.random()*16777216).toString(16);
-  return randColor;
-}
-
 function setToken(ctx, user) {
   const payload = {
     userID: user.userID,
@@ -36,7 +31,6 @@ export default {
     forCreate.email = body.email.toLowerCase();
     forCreate.jwtSecret = body.email.toLowerCase();
     forCreate.password = body.password;
-    forCreate.color = randomColor();
     const newUser = await Users.create(forCreate);
     console.log(`${new Date().toLocaleString()} email=${body.email} signUp success!`);
     setToken(ctx, newUser);
