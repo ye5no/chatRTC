@@ -1,18 +1,21 @@
 # chatRTC
-chat on webRTC with File receiver
+Chat on webRTC with File receiver
 
-Main modules: NodeJS + Koa + SocketIO
-DB: MYSQL / Sequelize
-Auth: JWT
-Development: esLint + babel + webPack
-Tecnology: webRTC
+ - Main modules: NodeJS + Koa + SocketIO
+ - DB: MYSQL / Sequelize
+ - Auth: JWT
+ - Development: esLint + babel + webPack
+ - Tecnology: webRTC
 
-# Init
+## Installation
+```
 npm -i
+```
 
 Make dir /config and put default.json and development.json
 
 default.json examle:
+```js
 {
   "jwt":{
     "secret": "veryBigSecret",
@@ -20,8 +23,9 @@ default.json examle:
     "exp" : 6048000
   }
 }
-
+```
 development.json example:
+```js
 {
   "env" : "development",
   "ip": "yourServerIP",
@@ -39,3 +43,9 @@ development.json example:
     }
   }
 }
+```
+
+## Start
+```
+npm run-script dev
+```
