@@ -172,17 +172,19 @@ function broadcastMessage(type, data) {
   message.value = '';
 }
 
-message.addEventListener('change', function () {
+message.addEventListener('change', function (event) {
+  event.preventDefault();
   broadcastMessage('simple message', message.value);
 });
 
-fileInput.addEventListener('change', function (e) {
-  var file = e.target.files[0];
+fileInput.addEventListener('change', function (event) {
+  event.preventDefault();
+  var file = event.target.files[0];
   if (file) {
     outFiles[file.name] = file;
     broadcastMessage('hey! I have the file!', file.name);
   }
-}, false);
+});
 
 outButton.addEventListener('click', function () {
   (0, _auth2.default)(outButton);
@@ -326,8 +328,16 @@ function bindEvents(us) {
     }
   };
 
+  channel.onclose = function (event) {
+    console.log('channel close with ' + event.target.owner);
+    users.splice(users.indexOf(event.target.owner), 1);
+    showUsersList();
+    delete peers[us];
+  };
+
   channel.onmessage = function (event) {
     var chunkEvent = false;
+    var addButton = false;
     try {
       JSON.parse(event.data);
     } catch (err) {
@@ -351,12 +361,9 @@ function bindEvents(us) {
             var but = document.createElement('button');
             but.innerHTML = event.target.owner + ' : ' + pkg.cont;
             but.className = 'btn btn-success';
-            but.onclick = function () {
-              if (currentLoad == undefined) {
-                currentLoad = [];
-                peers[event.target.owner].channel.send(JSON.stringify({ type: 'give me this file', cont: pkg.cont }));
-              }
-            };
+            but.id = 'owner:' + event.target.owner + '-file:' + pkg.cont;
+            // but.onclick = downloadFile;
+            addButton = but.id;
             elem.appendChild(but);
             break;
           }
@@ -402,16 +409,31 @@ function bindEvents(us) {
           break;
       }
       chatLog.appendChild(elem);
+      if (addButton !== false) {
+        document.getElementById(addButton).addEventListener('click', downloadFile, { once: true });
+      }
     }
   };
-
-  channel.onclose = function (event) {
-    console.log('channel close with ' + event.target.owner);
-    users.splice(users.indexOf(event.target.owner), 1);
-    showUsersList();
-    delete peers[us];
-  };
 }
+
+var downloadFile = function downloadFile(ev) {
+  console.log('request for download');
+  var owner = ev.target.id.split('-file:')[0].replace('owner:', '');
+  var file = ev.target.id.split('-file:')[1];
+  if (peers[owner] != undefined) {
+    if (peers[owner].channel.readyState == 'open') {
+      if (currentLoad == undefined) {
+        currentLoad = [];
+        peers[owner].channel.send(JSON.stringify({ type: 'give me this file', cont: file }));
+      }
+    } else {
+      console.log('Channel no open');
+    }
+  } else {
+    console.log('No owner');
+  }
+  return false;
+};
 
 exports.socketNewPeer = socketNewPeer;
 exports.socketReceived = socketReceived;

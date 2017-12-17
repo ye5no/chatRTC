@@ -40,17 +40,19 @@ function broadcastMessage(type, data) {
   message.value = '';
 }
 
-message.addEventListener('change', () => {
+message.addEventListener('change', (event) => {
+  event.preventDefault();
   broadcastMessage('simple message', message.value);
 });
 
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
+fileInput.addEventListener('change', (event) => {
+  event.preventDefault();
+  const file = event.target.files[0];
   if (file) {
     outFiles[file.name] = file;
     broadcastMessage('hey! I have the file!', file.name);
   }
-}, false);
+});
 
 outButton.addEventListener('click', () => {
   authUser(outButton);

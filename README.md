@@ -7,12 +7,17 @@ Chat on webRTC with File receiver
  - Development: esLint + babel + webPack
  - Tecnology: webRTC
 
+Require:
+ - Node >=7.0
+ - MYSQL
+
+
 ## Installation
 ```
-npm -i
+npm install
 ```
 
-Make dir /config and put default.json and development.json
+Make dir /config and put default.json and production.json
 
 default.json examle:
 ```js
@@ -24,10 +29,10 @@ default.json examle:
   }
 }
 ```
-development.json example:
+production.json example:
 ```js
 {
-  "env" : "development",
+  "env" : "production",
   "ip": "yourServerIP",
   "port": 80,
   "dir": "yourDirName",
@@ -47,5 +52,5 @@ development.json example:
 
 ## Start
 ```
-npm run-script dev
+npm run start
 ```

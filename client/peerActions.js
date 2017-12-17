@@ -99,8 +99,16 @@ function bindEvents(us) {
     }
   };
 
+  channel.onclose = (event) => {
+    console.log('channel close with '+ event.target.owner);
+    users.splice(users.indexOf(event.target.owner), 1);
+    showUsersList();
+    delete peers[us];
+  };
+
   channel.onmessage = (event) => {
     let chunkEvent = false;
+    let addButton = false;
     try {
       JSON.parse(event.data);
     } catch (err) { // received file chunk -------------------
@@ -117,15 +125,12 @@ function bindEvents(us) {
           elem.innerHTML = event.target.owner + ' : ' + pkg.cont;
           break;
         case 'hey! I have the file!': { // received new file link -------------------
-          let but = document.createElement('button');
+          const but = document.createElement('button');
           but.innerHTML = event.target.owner + ' : ' + pkg.cont;
           but.className = 'btn btn-success';
-          but.onclick = () => {
-            if (currentLoad == undefined) {
-              currentLoad = [];
-              peers[event.target.owner].channel.send(JSON.stringify({type: 'give me this file', cont: pkg.cont}));
-            }
-          };
+          but.id = 'owner:'+event.target.owner+'-file:'+pkg.cont;
+          // but.onclick = downloadFile;
+          addButton = but.id;
           elem.appendChild(but);
           break;
         }
@@ -169,16 +174,31 @@ function bindEvents(us) {
           break;
       }
       chatLog.appendChild(elem);
+      if (addButton!==false) {
+        document.getElementById(addButton).addEventListener('click', downloadFile, {once: true});
+      }
     }
   };
-
-  channel.onclose = (event) => {
-    console.log('channel close with '+ event.target.owner);
-    users.splice(users.indexOf(event.target.owner), 1);
-    showUsersList();
-    delete peers[us];
-  };
 }
+
+const downloadFile = (ev) => {
+  console.log('request for download');
+  const owner = ev.target.id.split('-file:')[0].replace('owner:', '');
+  const file = ev.target.id.split('-file:')[1];
+  if (peers[owner] != undefined) {
+    if (peers[owner].channel.readyState == 'open') {
+      if (currentLoad == undefined) {
+        currentLoad = [];
+        peers[owner].channel.send(JSON.stringify({type: 'give me this file', cont: file}));
+      }
+    } else {
+      console.log('Channel no open');
+    }
+  } else {
+    console.log('No owner');
+  }
+  return false;
+};
 
 export {
   socketNewPeer,
