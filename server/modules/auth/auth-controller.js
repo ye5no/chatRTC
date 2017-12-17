@@ -1,7 +1,7 @@
 import passport from 'koa-passport';
 import jwt from 'jsonwebtoken';
-import e1 from '../../utils/e1.js';
-import {JWT} from '../../config.js';
+import e1 from 'e1.js';
+import {JWT} from 'config.js';
 import Users from '../../models/users.js';
 
 function setToken(ctx, user) {

@@ -1,5 +1,5 @@
-import app from './app.js';
-import {IP, PORT} from './config.js';
+import app from 'app.js';
+import {IP, PORT} from 'config.js';
 
 const server = (process.env.NODE_ENV === 'test')
   ?

@@ -8,8 +8,5 @@ inits(app);
 
 app.use(pages);
 app.use(modules);
-app.use(async (ctx) => {
-  ctx.throw(404, 'Страница не найдена');
-});
 
 export default app;

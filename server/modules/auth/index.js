@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import controller from './auth-controller.js';
-import jwtUser from '../../utils/getUser.js';
+import jwtUser from 'getUser.js';
 
 const router = new Router({ prefix: '/auth' });
 

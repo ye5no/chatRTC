@@ -1,1 +1,1 @@
-nodemon --exec "yarn lint && webpack && yarn start"
+nodemon --exec "npm run lint && webpack && npm run startDev"

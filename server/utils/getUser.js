@@ -1,5 +1,5 @@
 import passport from 'koa-passport';
-import e1 from './e1.js';
+import e1 from 'e1.js';
 
 export default () => async (ctx, next) => {
   await passport.authenticate('jwt', async (err, user) => {

@@ -1,6 +1,9 @@
 exports.init = (app) => app.use(async (ctx, next) => {
   try {
     await next();
+    app.use((ctx) => {
+      ctx.throw(404, 'Страница не найдена');
+    });
   } catch (e) {
     if (e.status) {
       ctx.state.message = e.message;

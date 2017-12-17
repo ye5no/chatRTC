@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "startDev.bat",
     "lint": "eslint server && eslint client",
-    "start": "babel-node server/server.js"
+    "startDev": "cross-env NODE_ENV=development NODE_PATH=./server:./server/utils babel-node server/server.js",
+    "start": "cross-env NODE_ENV=production NODE_PATH=./server:./server/utils babel-node server/server.js"
   },
   "nodemonConfig": {
     "watch": [
@@ -32,6 +33,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "config": "^1.28.1",
+    "cross-env": "^5.1.1",
     "crypto": "^1.0.1",
     "jsonwebtoken": "^8.1.0",
     "koa": "^2.4.1",

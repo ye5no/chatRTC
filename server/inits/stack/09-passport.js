@@ -3,7 +3,7 @@ import passLocal from 'passport-local';
 import passJwt from 'passport-jwt';
 import Users from '../../models/users';
 import crypto from 'crypto';
-import {JWT} from '../../config.js';
+import {JWT} from 'config.js';
 
 
 exports.init = (app) => {

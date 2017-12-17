@@ -1,7 +1,7 @@
 import Router from 'koa-router';
-import getUser from '../utils/getUser.js';
+import getUser from 'getUser.js';
 import Users from '../models/users.js';
-import app from '../app.js';
+import app from 'app.js';
 
 const router = new Router();
 

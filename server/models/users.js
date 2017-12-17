@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import Sequelize from 'sequelize';
-import sql from '../utils/mysql-connection';
+import sql from 'mysql-connection.js';
 
 const name = 'users';
 const schema = {
