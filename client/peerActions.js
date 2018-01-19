@@ -1,5 +1,6 @@
 import {server, options} from './peerConfig.js';
 import {socket, user, outFiles} from './chat.js';
+import dice from './dice.js';
 
 const chatLog = document.getElementById('chatLog');
 const usersList = document.getElementById('usersList');
@@ -108,7 +109,6 @@ function bindEvents(us) {
 
   channel.onmessage = (event) => {
     let chunkEvent = false;
-    let addButton = false;
     try {
       JSON.parse(event.data);
     } catch (err) { // received file chunk -------------------
@@ -121,24 +121,30 @@ function bindEvents(us) {
       const pkg = JSON.parse(event.data);
       const elem = document.createElement('div');
       switch (pkg.type) {
-        case 'simple message': // received plain text message -------------------
-          elem.innerHTML = event.target.owner + ' : ' + pkg.cont;
+        case 'simple message': {// received plain text message -------------------
+          let diceVerify='';
+          if (pkg.cont.indexOf('Dice result')==0) {
+            diceVerify = (dice.verify(pkg.cont))
+            ? '<span style="color: green"> - verified!</span>'
+            : '<span style="color: red"> - not verified.</span>';
+          }
+          elem.innerHTML = event.target.owner + ' : ' + pkg.cont + diceVerify;
+
           break;
+        }
         case 'hey! I have the file!': { // received new file link -------------------
           const but = document.createElement('button');
           but.innerHTML = event.target.owner + ' : ' + pkg.cont;
           but.className = 'btn btn-success';
           but.id = 'owner:'+event.target.owner+'-file:'+pkg.cont;
-          // but.onclick = downloadFile;
-          addButton = but.id;
+          but.onclick = downloadFile;
           elem.appendChild(but);
           break;
         }
-        case 'give me this file': // received request for upload file -------------------
-          if (outFiles[pkg.cont]!=undefined) {
+        case 'give me this file': {// received request for upload file -------------------
+          if (outFiles[pkg.cont] != undefined) {
             const sendChannel = peers[event.target.owner].channel;
             const file = outFiles[pkg.cont];
-
             const sliceFile = function(offset) {
               const reader = new window.FileReader();
               reader.onload = ((file) => {
@@ -154,14 +160,17 @@ function bindEvents(us) {
               const slice = file.slice(offset, offset + chunkSize);
               reader.readAsArrayBuffer(slice);
             };
-
             sliceFile(0);
           } else {
-            peers[event.target.owner].channel.send(JSON.stringify({type: 'simple message', data: 'Sorry: no such file!'}));
+            peers[event.target.owner].channel.send(JSON.stringify({
+              type: 'simple message',
+              cont: 'Sorry: no such file!',
+            }));
           }
           break;
-        case 'that is all': // received end of downloaded file -------------------
-          if (currentLoad!=undefined) {
+        }
+        case 'that is all': {// received end of downloaded file -------------------
+          if (currentLoad != undefined) {
             const received = new window.Blob(currentLoad);
             const a = document.createElement('a');
             a.href = window.URL.createObjectURL(received);
@@ -172,17 +181,61 @@ function bindEvents(us) {
             currentLoad = undefined;
           }
           break;
+        }
+        case 'dice.start': {
+          // событие происходит когда один из участников инициировал начало игры - стал игроком (player). а остальные участники стали свидетелями (witness.owner).
+          // игрок высылает идентификатор игры (id)
+          // создается экземпляр класса Dice {id, player, base, witness {hashedOffset, keyOffset, result, confirm}, result, confirmed}
+          // значения сохраняются в dice {id, player}
+          // автоматически регистрируются все свидетели игры dice.witness.owner по списку участников
+          // свидетель рандомит смещение и рандомит ключ шифрования keyOffset.
+          // шифрует смещение в hashedOffset ключом keyOffset и высылает hashedOffset всем участникам
+          dice.start(event.target.owner, pkg.cont, users);
+          break;
+        }
+        case 'dice.hashedOffset': {
+          // событие происходит когда один из свидетелей (dice.witness.owner) прислал свой hashedOffset
+          // значение сохраняется в dice.witness.hashedOffset
+          // если игрок получил hashedOffset от всех свидетелей, он рандомит базовое число dice.base и отправляет его свидетелям
+          dice.hashedOffset(event.target.owner, pkg.cont);
+          break;
+        }
+        case 'dice.base': {
+          // событие происходит когда свидетель получил от игрока базовое число dice.base
+          // свидетель отправляет всем участникам свой keyOffset для расшифровки hashedOffset
+          dice.base(pkg.cont);
+          break;
+        }
+        case 'dice.keyOffset': {
+          // событие происходит когда участник получил keyOffset от свидетеля
+          // участник вычисляет dice.witness.result, расшифровкой hashedOffset ключом keyOffset
+          // если вычеслены все dice.witness.result, то вычисляется итоговый результат dice.result
+          // если игрок вычислил dice.result, то он отправлет запрос свидетелям на подтверждение итогов
+          dice.keyOffset(event.target.owner, pkg.cont);
+          break;
+        }
+        case 'dice.result': {
+          // событие происходит когда свидетель получил от игрока результат игры playerResult
+          // если результат playerResult == вычисленному результату dice.result то свидетель отправляет участникам подтверждение dice.witness.confirm
+          dice.result(pkg.cont);
+          break;
+        }
+        case 'dice.confirm': {
+          // событие происходит когда участник получает от свидетеля подтверждение
+          // подтверждение записывается в dice.witness.confirm
+          // получив подтверждения от всех свидетелей dice.confirmed = true - игра считается завершенной
+          // выводится результат броска
+          dice.confirm(event.target.owner, pkg.cont);
+          break;
+        }
       }
       chatLog.appendChild(elem);
-      if (addButton!==false) {
-        document.getElementById(addButton).addEventListener('click', downloadFile, {once: true});
-      }
     }
   };
 }
 
 const downloadFile = (ev) => {
-  console.log('request for download');
+  console.log('download request');
   const owner = ev.target.id.split('-file:')[0].replace('owner:', '');
   const file = ev.target.id.split('-file:')[1];
   if (peers[owner] != undefined) {
@@ -192,10 +245,10 @@ const downloadFile = (ev) => {
         peers[owner].channel.send(JSON.stringify({type: 'give me this file', cont: file}));
       }
     } else {
-      console.log('Channel no open');
+      console.log('Channel have not opened');
     }
   } else {
-    console.log('No owner');
+    console.log('No owner here');
   }
   return false;
 };
@@ -204,4 +257,5 @@ export {
   socketNewPeer,
   socketReceived,
   peers,
+  users,
 };

@@ -1,1 +1,1 @@
-nodemon --exec "npm run lint && webpack && npm run startDev"
+nodemon --exec "webpack && npm run startDev"

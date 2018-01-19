@@ -1,5 +1,6 @@
 import authUser from './auth.js';
-import {socketReceived, socketNewPeer, peers} from './peerActions.js';
+import {socketReceived, socketNewPeer, peers, users} from './peerActions.js';
+import dice from './dice.js';
 
 const socket = window.io();
 const user = document.getElementById('username').innerHTML;
@@ -8,6 +9,7 @@ const chatLog = document.getElementById('chatLog');
 const message = document.getElementById('message');
 const fileInput = document.getElementById('fileInput');
 const openChannels = document.getElementById('openChannels');
+const diceButton = document.getElementById('diceButton');
 
 const outFiles = {};
 
@@ -35,9 +37,13 @@ function broadcastMessage(type, data) {
       }
     }
   }
-  const typeData = (type == 'file') ? data + ' (file)' : data;
-  chatLog.innerHTML += '<div>Me : ' + typeData + '</div>';
-  message.value = '';
+  if (type.indexOf('dice.')!=0) {
+    const typeData = (type == 'hey! I have the file!') ? data + ' (file)' : data;
+    const newDiv = document.createElement('div');
+    newDiv.innerHTML = 'Me : ' + typeData;
+    chatLog.appendChild(newDiv);
+    message.value = '';
+  }
 }
 
 message.addEventListener('change', (event) => {
@@ -56,6 +62,12 @@ fileInput.addEventListener('change', (event) => {
 
 outButton.addEventListener('click', () => {
   authUser(outButton);
+});
+
+diceButton.addEventListener('click', () => {
+  const id = Math.random()+'';
+  dice.start(user, id, users);
+  broadcastMessage('dice.start', id);
 });
 
 window.addEventListener('beforeunload', () => {
@@ -77,4 +89,5 @@ export {
   socket,
   user,
   outFiles,
+  broadcastMessage,
 };

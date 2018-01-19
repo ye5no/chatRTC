@@ -60,11 +60,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 72);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 25:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -114,14 +115,14 @@ exports.default = function (but) {
 };
 
 /***/ }),
-/* 1 */,
-/* 2 */
+
+/***/ 72:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _auth = __webpack_require__(0);
+var _auth = __webpack_require__(25);
 
 var _auth2 = _interopRequireDefault(_auth);
 
@@ -149,4 +150,5 @@ upButton.addEventListener('click', function () {
 });
 
 /***/ })
-/******/ ]);
+
+/******/ });
